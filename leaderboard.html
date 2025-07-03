@@ -97,7 +97,7 @@
       errorMsg.textContent = "";
 
       try {
-        const res = await fetch(`http://localhost:5000/leaderboard/${type}`);
+        const res = await fetch(`https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/leaderboard/${type}`);
         const data = await res.json();
         if (!data || data.length === 0) {
           errorMsg.textContent = "No leaderboard data available.";
