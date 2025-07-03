@@ -82,7 +82,7 @@
       const userid = document.getElementById("loginUserid").value;
       const password = document.getElementById("loginPassword").value;
 
-      fetch("http://localhost:5000/login", {
+      fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userid, password })
@@ -106,7 +106,7 @@
       const confirm = document.getElementById("confirmPassword").value;
       if (password !== confirm) return alert("Passwords do not match");
 
-      fetch("http://localhost:5000/signup", {
+      fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userid, email, password })
