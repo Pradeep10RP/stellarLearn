@@ -31,7 +31,7 @@
     }
 
     // Load questions from backend
-    fetch(`http://localhost:5000/quiz/${userid}`)
+    fetch(`https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/quiz/${userid}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) {
@@ -63,7 +63,7 @@
             answers.push({ id: item._id, selected: selected ? selected.value : "" });
           });
 
-          fetch("http://localhost:5000/quiz/submit", {
+          fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/quiz/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userid, answers })
