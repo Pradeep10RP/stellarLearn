@@ -1,0 +1,96 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StellarLearn Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="leaderboard.html">Leaderboard</a>
+  </nav>
+
+  <div id="timer">Time Left: 05:00</div>
+
+  <form id="quiz-box">
+    <!-- Questions will be injected here -->
+    <button type="submit">Submit Quiz</button>
+  </form>
+
+  <script>
+    let time = 300;
+    const timerDisplay = document.getElementById("timer");
+    const quizBox = document.getElementById("quiz-box");
+
+    const userid = localStorage.getItem("userid");
+    if (!userid) {
+      alert("You must login first.");
+      window.location.href = "login.html";
+    }
+
+    // Load questions from backend
+    fetch(`https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/quiz/${userid}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.error);
+          window.location.href = "index.html";
+          return;
+        }
+        const questions = data.questions;
+        questions.forEach((item, index) => {
+          const question = document.createElement("p");
+          question.textContent = `${index + 1}. ${item.question}`;
+          quizBox.insertBefore(question, quizBox.lastElementChild);
+
+          item.options.forEach((option, i) => {
+            const label = document.createElement("label");
+            label.innerHTML = `
+              <input type="radio" name="q${index}" value="${option}"> ${option}
+            `;
+            quizBox.insertBefore(label, quizBox.lastElementChild);
+          });
+        });
+
+        // Handle submit
+        quizBox.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const answers = [];
+          questions.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            answers.push({ id: item._id, selected: selected ? selected.value : "" });
+          });
+
+          fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/quiz/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userid, answers })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+              window.location.href = "index.html";
+            } else {
+              alert(`Quiz submitted! You scored ${data.points} points.`);
+              window.location.href = "leaderboard.html";
+            }
+          });
+        });
+      });
+
+    const interval = setInterval(() => {
+      let minutes = Math.floor(time / 60);
+      let seconds = time % 60;
+      timerDisplay.textContent = `Time Left: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      time--;
+      if (time < 0) {
+        clearInterval(interval);
+        quizBox.dispatchEvent(new Event("submit"));
+      }
+    }, 1000);
+  </script>
+</body>
+</html>

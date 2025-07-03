@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StellarLearn | Login or Signup</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #0d0d2b;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .auth-box {
+      background-color: #1b1b3a;
+      padding: 30px;
+      border-radius: 10px;
+      width: 320px;
+      box-shadow: 0 0 15px #0ff;
+    }
+    .auth-box h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .auth-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    .auth-box button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #0ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 15px;
+      cursor: pointer;
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-box" id="login-box">
+    <h2>Login</h2>
+    <input type="text" id="loginUserid" placeholder="User ID">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="toggle-link" onclick="toggleForm('signup')">Don't have an account? Signup</div>
+  </div>
+
+  <div class="auth-box" id="signup-box" style="display:none">
+    <h2>Signup</h2>
+    <input type="text" id="signupUserid" placeholder="User ID">
+    <input type="email" id="signupEmail" placeholder="Email">
+    <input type="password" id="signupPassword" placeholder="Password">
+    <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    <button onclick="signup()">Signup</button>
+    <div class="toggle-link" onclick="toggleForm('login')">Already have an account? Login</div>
+  </div>
+
+  <script>
+    function toggleForm(type) {
+      document.getElementById('login-box').style.display = (type === 'login') ? 'block' : 'none';
+      document.getElementById('signup-box').style.display = (type === 'signup') ? 'block' : 'none';
+    }
+
+    function login() {
+      const userid = document.getElementById("loginUserid").value;
+      const password = document.getElementById("loginPassword").value;
+
+      fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userid, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.userid) {
+          localStorage.setItem("userid", data.userid);
+          window.location.href = "index.html";
+        } else {
+          alert(data.error || "Login failed");
+        }
+      })
+      .catch(() => alert("Server error. Please try again later."));
+    }
+
+    function signup() {
+      const userid = document.getElementById("signupUserid").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      if (password !== confirm) return alert("Passwords do not match");
+
+      fetch("https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userid, email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          alert("Signup successful, now login.");
+          toggleForm('login');
+        } else {
+          alert(data.error || "Signup failed");
+        }
+      })
+      .catch(() => alert("Server error. Please try again later."));
+    }
+  </script>
+</body>
+</html>

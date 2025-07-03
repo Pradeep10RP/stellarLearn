@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StellarLearn | Leaderboard</title>
+  <style>
+    body {
+      background-color: #0d0d2b;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .home-btn {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 8px 16px;
+      background-color: #0ff;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .home-btn:hover {
+      background-color: #00e6e6;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tab {
+      margin: 0 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border: 1px solid #0ff;
+      border-radius: 5px;
+      background-color: #1b1b3a;
+    }
+    .tab.active {
+      background-color: #0ff;
+      color: #000;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+    }
+    th {
+      background-color: #1b1b3a;
+    }
+    .error {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <a class="home-btn" href="index.html">← Back to Home</a>
+  <h1 style="text-align: center; color: #0ff;">Leaderboard</h1>
+
+  <div class="tabs">
+    <div class="tab active" onclick="loadLeaderboard('daily', this)">Daily</div>
+    <div class="tab" onclick="loadLeaderboard('monthly', this)">Monthly</div>
+    <div class="tab" onclick="loadLeaderboard('alltime', this)">All-Time</div>
+  </div>
+
+  <table id="leaderboardTable">
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>User ID</th>
+        <th>Points</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="errorMsg" class="error"></div>
+
+  <script>
+    async function loadLeaderboard(type, el) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+
+      const tbody = document.querySelector("#leaderboardTable tbody");
+      const errorMsg = document.getElementById("errorMsg");
+      tbody.innerHTML = "";
+      errorMsg.textContent = "";
+
+      try {
+        const res = await fetch(`https://9ba9c3b6-835d-4937-8835-707306d9029e-00-3roiw9vu662vx.sisko.replit.dev/leaderboard/${type}`);
+        const data = await res.json();
+        if (!data || data.length === 0) {
+          errorMsg.textContent = "No leaderboard data available.";
+          return;
+        }
+        data.forEach((entry, index) => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${entry.userid}</td>
+              <td>${entry.points}</td>
+            </tr>`;
+        });
+      } catch (error) {
+        errorMsg.textContent = "Failed to load leaderboard. Please try again later.";
+        console.error("Leaderboard fetch error:", error);
+      }
+    }
+
+    window.onload = () => loadLeaderboard("daily", document.querySelector(".tab"));
+  </script>
+</body>
+</html>
